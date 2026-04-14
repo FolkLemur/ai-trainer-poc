@@ -1,5 +1,6 @@
 "use client"
 
+import { saveWorkout } from "@/lib/saveWorkout"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useApp } from "@/contexts/app-context"
@@ -26,12 +27,15 @@ export function TrainingScreen() {
     setCurrentExerciseIndex(currentExerciseIndex + 1)
   }
 
-  const handleFinishWorkout = () => {
-    setShowFinishMessage(true)
-    setTimeout(() => {
-      router.push("/trainer")
-    }, 1500)
-  }
+  const handleFinishWorkout = async () => {
+  await saveWorkout(exercises)
+
+  setShowFinishMessage(true)
+
+  setTimeout(() => {
+    router.push("/trainer")
+  }, 1500)
+}
 
   if (showFinishMessage) {
     return (
