@@ -19,7 +19,6 @@ export async function saveWorkout(exercises: any[]) {
   const sets = exercises.flatMap((exercise) =>
     exercise.sets.map((set: any, index: number) => ({
       session_id: sessionId,
-      exercise_id: null, // poprawimy później
       set_number: index + 1,
       actual_reps: set.reps,
       actual_weight: set.weight,
