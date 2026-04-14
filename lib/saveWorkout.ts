@@ -21,9 +21,10 @@ export async function saveWorkout(exercises: any[]) {
       session_id: sessionId,
       exercise_id: null, // poprawimy później
       set_number: index + 1,
-      reps: set.reps,
-      weight: set.weight,
+      actual_reps: set.reps,
+      actual_weight: set.weight,
       target_weight: set.targetWeight,
+      target_reps: set.targetReps,
     }))
   )
 
