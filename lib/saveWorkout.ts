@@ -27,7 +27,7 @@ export async function saveWorkout(exercises: any[]) {
       target_reps: set.targetReps,
     }))
   )
-
+  console.log('SETS PAYLOAD:', sets)
   // 3. save sets
   const { error: setsError } = await supabase
     .from('workout_sets')
