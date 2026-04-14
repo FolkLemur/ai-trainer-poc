@@ -36,6 +36,7 @@ interface AppContextType {
   addEmptyExercise: () => void
   currentExerciseIndex: number
   setCurrentExerciseIndex: (index: number) => void
+  setExercisesFromPlan: (data: any) => void
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -160,6 +161,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   ])
   const [exercises, setExercises] = useState<Exercise[]>(initialExercises)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
+  const setExercisesFromPlan = (planData: any) => {
+  if (!planData || !planData[0]) return
+
+  const day = planData[0]
+
+  const mapped = day.plan_exercises
+    .sort((a: any, b: any) => a.order_index - b.order_index)
+    .map((ex: any, index: number) => ({
+      id: (index + 1).toString(),
+      name: ex.exercises.name,
+      tip: "",
+      breakTime: `${ex.exercises.rest_time} min`,
+      sets: Array.from({ length: ex.target_sets }).map(() => ({
+        reps: 0,
+        weight: 0,
+        targetReps: ex.target_reps,
+        targetWeight: 0,
+      })),
+    }))
+
+  setExercises(mapped)
+}
 
   const addMessage = (message: Omit<Message, "id">) => {
     const newMessage = { ...message, id: Date.now().toString() }
@@ -212,6 +235,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addEmptyExercise,
         currentExerciseIndex,
         setCurrentExerciseIndex,
+        setExercisesFromPlan,
       }}
     >
       {children}
