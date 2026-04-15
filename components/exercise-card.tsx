@@ -50,7 +50,7 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
         
         {showDropdown && (
           <div className="absolute top-full left-0 right-0 bg-secondary rounded-lg shadow-lg z-10 mt-1 max-h-48 overflow-y-auto">
-            {exerciseOptions.map((option) => (
+            {["Bench Press", "Squat", "Deadlift", "Shoulder Press"].map((option) => (
               <button
                 key={option}
                 onClick={() => handleSelectExercise(option)}
