@@ -62,7 +62,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const day = planData[0]
 
-    const dbExercises = await getExercises() || []
+    const dbExercises = (await getExercises()) || []
 
     const exerciseMap = Object.fromEntries(
       dbExercises.map((e: any) => [e.name, e.id])
@@ -76,9 +76,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           const exerciseId = exerciseMap[exerciseName]
 
           let targetWeight = 0
+          let lastSets: any[] = []
 
           if (exerciseId) {
-            const lastSets = await getLastSetsForExercise(exerciseId)
+            lastSets = await getLastSetsForExercise(exerciseId)
             targetWeight = getNextWeight(lastSets)
           }
 
@@ -87,9 +88,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
             name: exerciseName,
             tip: "",
             breakTime: `${ex.exercises.rest_time} min`,
-            sets: Array.from({ length: ex.target_sets }).map(() => ({
-              reps: 0,
-              weight: 0,
+            sets: Array.from({ length: ex.target_sets }).map((_, i) => ({
+              // 🔥 ACTUAL z historii (kluczowa zmiana)
+              reps: lastSets[i]?.actual_reps ?? 0,
+              weight: lastSets[i]?.actual_weight ?? 0,
+
+              // 🎯 TARGET z systemu (bez zmian)
               targetReps: ex.target_reps,
               targetWeight,
             })),
