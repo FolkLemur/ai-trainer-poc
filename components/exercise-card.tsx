@@ -2,7 +2,6 @@
 
 import { ChevronDown, MessageCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useApp, exerciseOptions } from "@/contexts/app-context"
 import { useState, useRef } from "react"
 
 interface ExerciseCardProps {
