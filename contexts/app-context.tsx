@@ -34,7 +34,12 @@ interface AppContextType {
   messages: Message[]
   addMessage: (message: Omit<Message, "id">) => void
   exercises: Exercise[]
-  updateExercise: (exerciseId: string, setIndex: number, field: "reps" | "weight", value: number) => void
+  updateExercise: (
+    exerciseId: string,
+    setIndex: number,
+    field: "reps" | "weight" | "targetReps" | "targetWeight",
+    value: number
+  ) => void
   replaceExerciseAtIndex: (index: number, exerciseName: string) => void
   addEmptyExercise: () => void
   currentExerciseIndex: number
@@ -89,11 +94,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
             tip: "",
             breakTime: `${ex.exercises.rest_time} min`,
             sets: Array.from({ length: ex.target_sets }).map((_, i) => ({
-              // 🔥 ACTUAL z historii (kluczowa zmiana)
               reps: lastSets[i]?.actual_reps ?? 0,
               weight: lastSets[i]?.actual_weight ?? 0,
-
-              // 🎯 TARGET z systemu (bez zmian)
               targetReps: ex.target_reps,
               targetWeight,
             })),
@@ -109,17 +111,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setMessages((prev) => [...prev, newMessage])
   }
 
+  // 🔥 KLUCZOWA ZMIANA TUTAJ
   const updateExercise = (
     exerciseId: string,
     setIndex: number,
-    field: "reps" | "weight",
+    field: "reps" | "weight" | "targetReps" | "targetWeight",
     value: number
   ) => {
     setExercises((prev) =>
       prev.map((exercise) => {
         if (exercise.id === exerciseId) {
           const newSets = [...exercise.sets]
-          newSets[setIndex] = { ...newSets[setIndex], [field]: value }
+          newSets[setIndex] = {
+            ...newSets[setIndex],
+            [field]: value,
+          }
           return { ...exercise, sets: newSets }
         }
         return exercise
