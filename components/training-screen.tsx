@@ -7,11 +7,25 @@ import { useApp } from "@/contexts/app-context"
 import { ExerciseCard } from "@/components/exercise-card"
 import { SwipeButton } from "@/components/swipe-button"
 import { useState } from "react"
+import { useEffect } from "react"
+import { getLastSetsForExercise } from "@/lib/getLastWorkout"
 
 export function TrainingScreen() {
   const router = useRouter()
   const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise } = useApp()
   const [showFinishMessage, setShowFinishMessage] = useState(false)
+
+  useEffect(() => {
+    async function test() {
+      const exerciseId = "4c354769-60d1-4f05-992b-4fd8943ed974"
+
+      const sets = await getLastSetsForExercise(exerciseId)
+
+      console.log("LAST SETS:", sets)
+    }
+
+    test()
+  }, [])
 
   const goToPrevious = () => {
     if (currentExerciseIndex > 0) {
