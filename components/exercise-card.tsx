@@ -180,7 +180,6 @@ function SetRow({
 function SwipeValue({ value, step, onChange }: any) {
   const startX = useRef(0)
   const startVal = useRef(value)
-  const [drag, setDrag] = useState(false)
 
   const move = (x: number) => {
     const diff = startX.current - x
@@ -189,24 +188,38 @@ function SwipeValue({ value, step, onChange }: any) {
     onChange(Math.round(val / step) * step)
   }
 
+  // 🖱 MOUSE
+  const handleMouseDown = (e: React.MouseEvent) => {
+    startX.current = e.clientX
+    startVal.current = value
+
+    const moveHandler = (e: MouseEvent) => move(e.clientX)
+
+    const up = () => {
+      window.removeEventListener("mousemove", moveHandler)
+      window.removeEventListener("mouseup", up)
+    }
+
+    window.addEventListener("mousemove", moveHandler)
+    window.addEventListener("mouseup", up)
+  }
+
+  // 📱 TOUCH (FIX)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.touches[0].clientX
+    startVal.current = value
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    move(e.touches[0].clientX)
+  }
+
   return (
     <div
-      className="text-[40px] font-bold text-center cursor-ew-resize"
-      onMouseDown={(e) => {
-        startX.current = e.clientX
-        startVal.current = value
-        setDrag(true)
-
-        const moveHandler = (e: any) => move(e.clientX)
-        const up = () => {
-          setDrag(false)
-          window.removeEventListener("mousemove", moveHandler)
-          window.removeEventListener("mouseup", up)
-        }
-
-        window.addEventListener("mousemove", moveHandler)
-        window.addEventListener("mouseup", up)
-      }}
+      className="text-[40px] font-bold text-center cursor-ew-resize select-none touch-none"
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
     >
       {value}
     </div>
