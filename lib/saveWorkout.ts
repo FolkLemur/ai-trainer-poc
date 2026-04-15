@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { getExercises } from './getExercises'
 
 export async function saveWorkout(exercises: any[]) {
   // 1. create session
@@ -15,18 +16,33 @@ export async function saveWorkout(exercises: any[]) {
 
   const sessionId = session.id
 
+  const dbExercises = await getExercises() || []
+
+  const exerciseMap = Object.fromEntries(
+    dbExercises.map((e: any) => [e.name, e.id])
+  )
+
   // 2. prepare sets
   const sets = exercises.flatMap((exercise) =>
     exercise.sets
       .filter((set: any) => set.reps > 0)
-      .map((set: any, index: number) => ({
-        session_id: sessionId,
-        set_number: index + 1,
-        actual_reps: set.reps,
-        actual_weight: set.weight,
-        target_weight: set.targetWeight,
-        target_reps: set.targetReps,
-      }))
+      .map((set: any, index: number) => {
+        const exerciseId = exerciseMap[exercise.name]
+
+        if (!exerciseId) {
+          console.warn('Missing exercise_id for:', exercise.name)
+        }
+
+        return {
+          session_id: sessionId,
+          exercise_id: exerciseId || null,
+          set_number: index + 1,
+          actual_reps: set.reps,
+          actual_weight: set.weight,
+          target_weight: set.targetWeight,
+          target_reps: set.targetReps,
+        }
+      })
   )
 
   if (sets.length === 0) {
