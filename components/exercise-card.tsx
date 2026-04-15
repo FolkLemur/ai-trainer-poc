@@ -193,7 +193,7 @@ function SwipeValue({ value, step, onChange }: any) {
     setIsDragging(false)
     hideTimeoutRef.current = setTimeout(() => {
       setShowBubble(false)
-    }, 1500)
+    }, 700)
   }
 
   return (
