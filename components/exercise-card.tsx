@@ -3,6 +3,7 @@
 import { ChevronDown, MessageCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useRef } from "react"
+import { useApp } from "@/contexts/app-context"
 
 interface ExerciseCardProps {
   exerciseIndex: number
