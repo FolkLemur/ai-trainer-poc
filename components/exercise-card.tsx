@@ -123,7 +123,6 @@ function SetRow({
 
   return (
     <div className="space-y-1">
-      {/* TARGET */}
       <div className="grid grid-cols-[0.5fr_1fr_1fr] gap-4 text-sm text-muted-foreground">
         <div></div>
 
@@ -167,7 +166,6 @@ function SetRow({
         </div>
       </div>
 
-      {/* ACTUAL */}
       <div className="grid grid-cols-[0.5fr_1fr_1fr] gap-4 items-center pb-3">
         <div className="text-center text-2xl font-bold">{setNumber}</div>
         <SwipeValue value={reps} step={1} onChange={onRepsChange} />
@@ -180,6 +178,13 @@ function SetRow({
 function SwipeValue({ value, step, onChange }: any) {
   const startX = useRef(0)
   const startVal = useRef(value)
+  const [isDragging, setIsDragging] = useState(false)
+  const [showBubble, setShowBubble] = useState(false)
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const formatValue = (val: number) => {
+    return Number.isInteger(val) ? val.toString() : val.toFixed(1)
+  }
 
   const move = (x: number) => {
     const diff = startX.current - x
@@ -188,14 +193,32 @@ function SwipeValue({ value, step, onChange }: any) {
     onChange(Math.round(val / step) * step)
   }
 
-  // 🖱 MOUSE
-  const handleMouseDown = (e: React.MouseEvent) => {
-    startX.current = e.clientX
+  const start = (x: number) => {
+    startX.current = x
     startVal.current = value
+    setIsDragging(true)
+    setShowBubble(true)
+
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current)
+      hideTimeoutRef.current = null
+    }
+  }
+
+  const end = () => {
+    setIsDragging(false)
+
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowBubble(false)
+    }, 1500) // 🔥 1.5s
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    start(e.clientX)
 
     const moveHandler = (e: MouseEvent) => move(e.clientX)
-
     const up = () => {
+      end()
       window.removeEventListener("mousemove", moveHandler)
       window.removeEventListener("mouseup", up)
     }
@@ -204,24 +227,38 @@ function SwipeValue({ value, step, onChange }: any) {
     window.addEventListener("mouseup", up)
   }
 
-  // 📱 TOUCH (FIX)
   const handleTouchStart = (e: React.TouchEvent) => {
-    startX.current = e.touches[0].clientX
-    startVal.current = value
+    start(e.touches[0].clientX)
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     move(e.touches[0].clientX)
   }
 
+  const handleTouchEnd = () => {
+    end()
+  }
+
   return (
-    <div
-      className="text-[40px] font-bold text-center cursor-ew-resize select-none touch-none"
-      onMouseDown={handleMouseDown}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-    >
-      {value}
+    <div className="relative">
+      {isDragging && (
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-lg font-bold shadow-lg z-20 whitespace-nowrap">
+          {formatValue(value)}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-primary" />
+        </div>
+      )}
+
+      <div
+        className={`text-[40px] font-bold text-center cursor-ew-resize select-none touch-none ${
+          isDragging ? "scale-105" : ""
+        } transition-transform`}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {formatValue(value)}
+      </div>
     </div>
   )
 }
