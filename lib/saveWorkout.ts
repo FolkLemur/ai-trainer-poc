@@ -67,6 +67,8 @@ export async function saveWorkout(exercises: any[], planDayId: string) {
     console.error('sets error:', setsError)
     return
   }
-
+  console.log("INSERTING SESSION WITH:", {
+    plan_day_id: planDayId,
+  })
   console.log('Workout saved 🔥')
 }
