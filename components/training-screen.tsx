@@ -13,7 +13,7 @@ import { supabase } from "@/lib/supabase"
 
 export function TrainingScreen() {
   const router = useRouter()
-  const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise, selectedPlanDayId, setExercisesFromPlan} = useApp()
+  const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise, selectedPlanDayId, setExercisesFromPlan, setPlanDays} = useApp()
   const [showFinishMessage, setShowFinishMessage] = useState(false)
 
   useEffect(() => {
@@ -35,7 +35,8 @@ export function TrainingScreen() {
     }
 
     console.log("PLAN DATA:", data)
-
+    
+    setPlanDays(data)
     await setExercisesFromPlan(data)
   }
 
