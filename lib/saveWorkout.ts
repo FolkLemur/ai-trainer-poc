@@ -1,11 +1,19 @@
 import { supabase } from './supabase'
 import { getExercises } from './getExercises'
 
-export async function saveWorkout(exercises: any[]) {
+export async function saveWorkout(exercises: any[], planDayId: string) {
+  // 🔥 get user
+  const {
+    data: { user }
+  } = await supabase.auth.getUser()
+
   // 1. create session
   const { data: session, error: sessionError } = await supabase
     .from('workout_sessions')
-    .insert({})
+    .insert({
+      plan_day_id: planDayId, // 🔥 KLUCZOWE
+      user_id: user?.id || null, // 🔥 też ważne
+    })
     .select()
     .single()
 
@@ -16,7 +24,7 @@ export async function saveWorkout(exercises: any[]) {
 
   const sessionId = session.id
 
-  const dbExercises = await getExercises() || []
+  const dbExercises = (await getExercises()) || []
 
   const exerciseMap = Object.fromEntries(
     dbExercises.map((e: any) => [e.name, e.id])
