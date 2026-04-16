@@ -12,7 +12,7 @@ import { getLastSetsForExercise } from "@/lib/getLastWorkout"
 
 export function TrainingScreen() {
   const router = useRouter()
-  const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise } = useApp()
+  const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise, selectedPlanDayId } = useApp()
   const [showFinishMessage, setShowFinishMessage] = useState(false)
 
   useEffect(() => {
@@ -20,8 +20,6 @@ export function TrainingScreen() {
       const exerciseId = "4c354769-60d1-4f05-992b-4fd8943ed974"
 
       const sets = await getLastSetsForExercise(exerciseId)
-
-      console.log("LAST SETS:", sets)
     }
 
     test()
@@ -42,7 +40,8 @@ export function TrainingScreen() {
   }
 
   const handleFinishWorkout = async () => {
-  await saveWorkout(exercises, "124b1e19-6fc1-4eed-93ba-5700027dbc79")
+  await saveWorkout(exercises, selectedPlanDayId)
+  console.log("SELECTED PLAN DAY:", selectedPlanDayId)
 
   setShowFinishMessage(true)
 
