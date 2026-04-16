@@ -4,6 +4,7 @@ import { createContext, useContext, useState, ReactNode } from "react"
 import { getLastSetsForExercise } from "@/lib/getLastWorkout"
 import { getNextWeight } from "@/lib/getNextWeight"
 import { getExercises } from "@/lib/getExercises"
+import { getLastWorkoutSession } from "@/lib/getLastWorkoutSession"
 
 interface Message {
   id: string
@@ -63,52 +64,66 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [selectedPlanDayId, setSelectedPlanDayId] = useState<string | null>(null)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
 
-  const setExercisesFromPlan = async (planData: any) => {
-    if (!planData || !planData[0]) return
-    
-    const day = planData[0]
+const setExercisesFromPlan = async (planData: any) => {
+  if (!planData || !planData[0]) return
 
-    const dbExercises = (await getExercises()) || []
+  // 🔥 1. wybierz dzień NAJPIERW
+  let day = planData[0]
 
-    const exerciseMap = Object.fromEntries(
-      dbExercises.map((e: any) => [e.name, e.id])
+  const lastSession = await getLastWorkoutSession()
+
+  if (lastSession?.plan_day_id) {
+    const currentIndex = planData.findIndex(
+      (d: any) => d.id === lastSession.plan_day_id
     )
 
-    const mapped = await Promise.all(
-      day.plan_exercises
-        .sort((a: any, b: any) => a.order_index - b.order_index)
-        .map(async (ex: any, index: number) => {
-          const exerciseName = ex.exercises.name
-          const exerciseId = exerciseMap[exerciseName]
-
-          let targetWeight = 0
-          let lastSets: any[] = []
-
-          if (exerciseId) {
-            lastSets = await getLastSetsForExercise(exerciseId)
-            targetWeight = getNextWeight(lastSets)
-          }
-
-          return {
-            id: (index + 1).toString(),
-            name: exerciseName,
-            tip: "",
-            breakTime: `${ex.exercises.rest_time} min`,
-            sets: Array.from({ length: ex.target_sets }).map((_, i) => ({
-              reps: lastSets[i]?.actual_reps ?? 0,
-              weight: lastSets[i]?.actual_weight ?? 0,
-              targetReps: ex.target_reps,
-              targetWeight,
-            })),
-          }
-        })
-    )
-    // 🔥 ustaw pierwszy dzień planu
-    if (day?.id) {
-      setSelectedPlanDayId(day.id)
-      }
-    setExercises(mapped)
+    if (currentIndex !== -1) {
+      const nextIndex = (currentIndex + 1) % planData.length
+      day = planData[nextIndex]
+    }
   }
+
+  setSelectedPlanDayId(day.id)
+
+  // 🔥 2. dopiero TERAZ robimy mapped
+  const dbExercises = (await getExercises()) || []
+
+  const exerciseMap = Object.fromEntries(
+    dbExercises.map((e: any) => [e.name, e.id])
+  )
+
+  const mapped = await Promise.all(
+    day.plan_exercises
+      .sort((a: any, b: any) => a.order_index - b.order_index)
+      .map(async (ex: any, index: number) => {
+        const exerciseName = ex.exercises.name
+        const exerciseId = exerciseMap[exerciseName]
+
+        let targetWeight = 0
+        let lastSets: any[] = []
+
+        if (exerciseId) {
+          lastSets = await getLastSetsForExercise(exerciseId)
+          targetWeight = getNextWeight(lastSets)
+        }
+
+        return {
+          id: (index + 1).toString(),
+          name: exerciseName,
+          tip: "",
+          breakTime: `${ex.exercises.rest_time} min`,
+          sets: Array.from({ length: ex.target_sets }).map((_, i) => ({
+            reps: lastSets[i]?.actual_reps ?? 0,
+            weight: lastSets[i]?.actual_weight ?? 0,
+            targetReps: ex.target_reps,
+            targetWeight,
+          })),
+        }
+      })
+  )
+
+  setExercises(mapped)
+}
 
   const addMessage = (message: Omit<Message, "id">) => {
     const newMessage = { ...message, id: Date.now().toString() }
