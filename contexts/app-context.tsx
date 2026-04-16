@@ -77,6 +77,12 @@ const setExercisesFromPlan = async (planData: any) => {
     const currentIndex = planData.findIndex(
       (d: any) => d.id === lastSession.plan_day_id
     )
+    console.log(
+  "PLAN DAYS IDS:",
+  planData.map((d: any) => d.id)
+)
+
+console.log("LAST PLAN DAY:", lastSession.plan_day_id)
 
     if (currentIndex !== -1) {
       const nextIndex = (currentIndex + 1) % planData.length
