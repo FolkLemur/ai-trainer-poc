@@ -71,6 +71,7 @@ const setExercisesFromPlan = async (planData: any) => {
   let day = planData[0]
 
   const lastSession = await getLastWorkoutSession()
+  console.log("LAST SESSION:", lastSession)
 
   if (lastSession?.plan_day_id) {
     const currentIndex = planData.findIndex(
