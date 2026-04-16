@@ -60,14 +60,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     },
   ])
   const [exercises, setExercises] = useState<Exercise[]>([])
-  const [selectedPlanDayId, setSelectedPlanDayId] = useState<string | null>(
-  "124b1e19-6fc1-4eed-93ba-5700027dbc79" // 🔥 ten UUID co działał
-)
+  const [selectedPlanDayId, setSelectedPlanDayId] = useState<string | null>(null)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)
 
   const setExercisesFromPlan = async (planData: any) => {
     if (!planData || !planData[0]) return
-
+    
     const day = planData[0]
 
     const dbExercises = (await getExercises()) || []
@@ -105,7 +103,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
           }
         })
     )
-
+    // 🔥 ustaw pierwszy dzień planu
+    if (day?.id) {
+      setSelectedPlanDayId(day.id)
+      }
     setExercises(mapped)
   }
 
