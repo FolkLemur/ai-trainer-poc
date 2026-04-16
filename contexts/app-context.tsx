@@ -46,6 +46,10 @@ interface AppContextType {
   currentExerciseIndex: number
   setCurrentExerciseIndex: (index: number) => void
   setExercisesFromPlan: (data: any) => Promise<void>
+  planDays: any[]
+  setPlanDays: (days: any[]) => void
+  selectedPlanDayId: string | null
+  setSelectedPlanDayId: (id: string) => void
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -53,6 +57,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined)
 export function AppProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isSideNavOpen, setIsSideNavOpen] = useState(false)
+  const [planDays, setPlanDays] = useState<any[]>([])
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -212,6 +217,8 @@ console.log("LAST PLAN DAY:", lastSession.plan_day_id)
         setExercisesFromPlan,
         selectedPlanDayId,
         setSelectedPlanDayId,
+        planDays,
+        setPlanDays,
       }}
     >
       {children}
