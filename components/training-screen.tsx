@@ -42,7 +42,7 @@ export function TrainingScreen() {
   }
 
   const handleFinishWorkout = async () => {
-  await saveWorkout(exercises, "test-id")
+  await saveWorkout(exercises, "124b1e19-6fc1-4eed-93ba-5700027dbc79")
 
   setShowFinishMessage(true)
 
