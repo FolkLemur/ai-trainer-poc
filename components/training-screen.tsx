@@ -9,21 +9,38 @@ import { SwipeButton } from "@/components/swipe-button"
 import { useState } from "react"
 import { useEffect } from "react"
 import { getLastSetsForExercise } from "@/lib/getLastWorkout"
+import { supabase } from "@/lib/supabase"
 
 export function TrainingScreen() {
   const router = useRouter()
-  const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise, selectedPlanDayId } = useApp()
+  const { exercises, currentExerciseIndex, setCurrentExerciseIndex, addEmptyExercise, selectedPlanDayId, setExercisesFromPlan} = useApp()
   const [showFinishMessage, setShowFinishMessage] = useState(false)
 
   useEffect(() => {
-    async function test() {
-      const exerciseId = "4c354769-60d1-4f05-992b-4fd8943ed974"
+  async function loadPlan() {
+    const { data, error } = await supabase
+      .from("plan_days")
+      .select(`
+        *,
+        plan_exercises (
+          *,
+          exercises (*)
+        )
+      `)
+      .order("order_index", { ascending: true })
 
-      const sets = await getLastSetsForExercise(exerciseId)
+    if (error) {
+      console.error("plan load error:", error)
+      return
     }
 
-    test()
-  }, [])
+    console.log("PLAN DATA:", data)
+
+    await setExercisesFromPlan(data)
+  }
+
+  loadPlan()
+}, [])    
 
   const goToPrevious = () => {
     if (currentExerciseIndex > 0) {
