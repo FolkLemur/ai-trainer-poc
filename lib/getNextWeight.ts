@@ -4,10 +4,10 @@ export function getNextWeight(lastSets: any[]) {
   const last = lastSets[0]
 
   // PRIORYTET: user target
-  const baseWeight =
-    last.target_weight && last.target_weight > 0
-      ? last.target_weight
-      : last.actual_weight || 0
+  const baseWeight = Math.max(
+  lastSet.target_weight || 0,
+  lastSet.actual_weight || 0
+)
 
   const targetReps = last.target_reps || 0
   const actualReps = last.actual_reps || 0
