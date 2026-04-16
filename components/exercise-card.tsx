@@ -11,7 +11,17 @@ interface ExerciseCardProps {
 
 export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
   const router = useRouter()
-  const { exercises, updateExercise, replaceExerciseAtIndex } = useApp()
+
+  const {
+    exercises,
+    updateExercise,
+    replaceExerciseAtIndex,
+    selectedPlanDayId,
+    setSelectedPlanDayId,
+    planDays,
+    setExercisesFromPlan,
+  } = useApp()
+
   const exercise = exercises[exerciseIndex]
   const [showDropdown, setShowDropdown] = useState(false)
 
@@ -27,6 +37,7 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
   return (
     <div className="flex flex-col h-full px-4">
       <div className="relative mb-4 flex items-center">
+        {/* Chat */}
         <button
           onClick={() => router.push("/trainer")}
           className="p-2 rounded-lg hover:bg-secondary transition-colors mr-2"
@@ -34,6 +45,7 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
           <MessageCircle className="w-5 h-5 text-muted-foreground" />
         </button>
 
+        {/* Exercise dropdown */}
         <button
           onClick={() => setShowDropdown(!showDropdown)}
           className="flex-1 flex items-center justify-center gap-2 py-2 text-lg font-semibold"
@@ -42,7 +54,26 @@ export function ExerciseCard({ exerciseIndex }: ExerciseCardProps) {
           <ChevronDown className={`w-5 h-5 ${showDropdown ? "rotate-180" : ""}`} />
         </button>
 
-        <div className="w-9" />
+        {/* 🔥 PLAN DAY DROPDOWN */}
+        <select
+          value={selectedPlanDayId || ""}
+          onChange={(e) => {
+            const newDayId = e.target.value
+            setSelectedPlanDayId(newDayId)
+
+            const selectedDay = planDays.find((d: any) => d.id === newDayId)
+            if (selectedDay) {
+              setExercisesFromPlan([selectedDay])
+            }
+          }}
+          className="ml-2 text-xs text-muted-foreground bg-transparent"
+        >
+          {planDays?.map((day: any) => (
+            <option key={day.id} value={day.id}>
+              {day.name}
+            </option>
+          ))}
+        </select>
 
         {showDropdown && (
           <div className="absolute top-full left-0 right-0 bg-secondary rounded-lg shadow-lg z-10 mt-1">
@@ -111,6 +142,7 @@ function SetRow({
 
   return (
     <div className="space-y-1">
+      {/* TARGET */}
       <div className="grid grid-cols-[0.5fr_1fr_1fr] gap-4 text-sm text-muted-foreground">
         <div></div>
 
@@ -154,6 +186,7 @@ function SetRow({
         </div>
       </div>
 
+      {/* ACTUAL */}
       <div className="grid grid-cols-[0.5fr_1fr_1fr] gap-4 items-center pb-3">
         <div className="text-center text-2xl font-bold">{setNumber}</div>
         <SwipeValue value={reps} step={1} onChange={onRepsChange} />
@@ -193,12 +226,11 @@ function SwipeValue({ value, step, onChange }: any) {
     setIsDragging(false)
     hideTimeoutRef.current = setTimeout(() => {
       setShowBubble(false)
-    }, 700)
+    }, 1500) // 🔥 1.5s
   }
 
   return (
     <div className="relative">
-      {/* ✅ FIX */}
       {showBubble && (
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-lg font-bold shadow-lg z-20">
           {formatValue(value)}
