@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { SwipeButton } from "@/components/swipe-button"
 import { useApp } from "@/contexts/app-context"
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 
 export function LoginScreen() {
   const [email, setEmail] = useState("")
@@ -12,9 +13,22 @@ export function LoginScreen() {
   const { setIsLoggedIn } = useApp()
   const router = useRouter()
 
-  const handleLogin = () => {
-    setIsLoggedIn(true)
+  const handleLogin = async () => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: "bartek@fit.com",
+    password: "bartek",
+    })
+  
+    if (error) {
+      console.error("LOGIN ERROR:", error)
+      return
+    }
+  
+    console.log("LOGGED USER:", data.user)
+  
+    setIsLoggedIn(true) // 🔥 dopiero po sukcesie
     router.push("/trainer")
+  }
   }
 
   return (
