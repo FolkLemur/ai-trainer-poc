@@ -7,12 +7,17 @@ export async function saveWorkout(exercises: any[], planDayId: string) {
     data: { user }
   } = await supabase.auth.getUser()
 
+  if (!user) {
+  console.error("NO USER - cannot save workout")
+  return
+  }
+
   // 1. create session
   const { data: session, error: sessionError } = await supabase
     .from('workout_sessions')
     .insert({
-      plan_day_id: planDayId, // 🔥 KLUCZOWE
-      user_id: user?.id || null, // 🔥 też ważne
+      plan_day_id: planDayId,
+      user_id: user.id, // 🔥 BEZ || null
     })
     .select()
     .single()
