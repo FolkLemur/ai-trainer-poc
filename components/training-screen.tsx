@@ -48,8 +48,11 @@ export function TrainingScreen() {
       }
 
       if (!userProfile?.active_plan_id) {
-        console.log("NO ACTIVE PLAN")
-        return
+      console.log("NO ACTIVE PLAN")
+    
+      setPlanDays([])        // 🔥 czyścimy dropdown
+      setExercisesFromPlan([]) // 🔥 czyścimy ćwiczenia
+      return
       }
 
       const { data: planDays, error: planError } = await supabase
