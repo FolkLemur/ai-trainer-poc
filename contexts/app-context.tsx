@@ -164,6 +164,10 @@ console.log("LAST PLAN DAY:", lastSession.plan_day_id)
     )
   }
 
+  const clearExercises = () => {
+  setExercises([])
+  }
+  
   const replaceExerciseAtIndex = (index: number, exerciseName: string) => {
     setExercises((prev) => {
       const newExercises = [...prev]
@@ -181,7 +185,7 @@ console.log("LAST PLAN DAY:", lastSession.plan_day_id)
       return newExercises
     })
   }
-
+  
   const addEmptyExercise = () => {
     setExercises((prev) => [
       ...prev,
@@ -210,6 +214,7 @@ console.log("LAST PLAN DAY:", lastSession.plan_day_id)
         addMessage,
         exercises,
         updateExercise,
+        clearExercises,
         replaceExerciseAtIndex,
         addEmptyExercise,
         currentExerciseIndex,
