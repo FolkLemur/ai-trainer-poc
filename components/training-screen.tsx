@@ -18,6 +18,13 @@ export function TrainingScreen() {
 
   useEffect(() => {
   async function loadPlan() {
+    
+    const {
+      data: { user }
+      } = await supabase.auth.getUser()
+
+console.log("CURRENT USER:", user)
+    
     const { data, error } = await supabase
       .from("plan_days")
       .select(`
