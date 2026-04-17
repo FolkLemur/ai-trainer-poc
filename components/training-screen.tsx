@@ -18,7 +18,8 @@ export function TrainingScreen() {
     addEmptyExercise,
     selectedPlanDayId,
     setExercisesFromPlan,
-    setPlanDays
+    setPlanDays,
+    clearExercises
   } = useApp()
 
   const [showFinishMessage, setShowFinishMessage] = useState(false)
@@ -50,8 +51,8 @@ export function TrainingScreen() {
       if (!userProfile?.active_plan_id) {
       console.log("NO ACTIVE PLAN")
     
-      setPlanDays([])        // 🔥 czyścimy dropdown
-      setExercisesFromPlan([]) // 🔥 czyścimy ćwiczenia
+      setPlanDays([])
+      clearExercises() // 🔥 to jest właściwy reset
       return
       }
 
