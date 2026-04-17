@@ -15,9 +15,14 @@ export function LoginScreen() {
 
   const handleLogin = async () => {
   const { data, error } = await supabase.auth.signInWithPassword({
-    email: "bartek@fit.com",
-    password: "bartek",
+    email: email,
+    password: password,
     })
+    
+    if (!email || !password) {
+    console.log("Missing credentials")
+    return
+    }
   
     if (error) {
       console.error("LOGIN ERROR:", error)
