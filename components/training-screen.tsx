@@ -25,16 +25,33 @@ export function TrainingScreen() {
 
 console.log("CURRENT USER:", user)
     
-    const { data, error } = await supabase
-      .from("plan_days")
-      .select(`
-        *,
-        plan_exercises (
-          *,
-          exercises (*)
-        )
-      `)
-      .order("order_index", { ascending: true })
+const { data, error } = await supabase
+const {
+  data: { user }
+} = await supabase.auth.getUser()
+
+const { data: userProfile } = await supabase
+  .from("users")
+  .select("active_plan_id")
+  .eq("id", user.id)
+  .single()
+
+if (!userProfile?.active_plan_id) {
+  console.log("NO ACTIVE PLAN")
+  return
+}
+
+const { data, error } = await supabase
+  .from("plan_days")
+  .select(`
+    *,
+    plan_exercises (
+      *,
+      exercises (*)
+    )
+  `)
+  .eq("plan_id", userProfile.active_plan_id) // 🔥 KLUCZ
+  .order("order_index", { ascending: true })
 
     if (error) {
       console.error("plan load error:", error)
@@ -49,6 +66,27 @@ console.log("CURRENT USER:", user)
 
   loadPlan()
 }, [])    
+
+  const goToPrevious = () => {
+    if (currentExerciseIndex > 0) {
+      setCurrentExerciseIndex(currentExerciseIndex - 1)
+    }
+  }
+
+  const goToNext = () => {
+    if (currentExerciseIndex === exercises.length - 1) {
+      // At the last exercise, add an empty slot
+      addEmptyExercise()
+    }
+    setCurrentExerciseIndex(currentExerciseIndex + 1)
+  }
+
+  const handleFinishWorkout = async () => {
+  await saveWorkout(exercises, selectedPlanDayId)
+  console.log("SELECTED PLAN DAY:", selectedPlanDayId)
+
+  setShowFinishMessage(true)
+
 
   const goToPrevious = () => {
     if (currentExerciseIndex > 0) {
