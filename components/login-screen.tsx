@@ -29,7 +29,6 @@ export function LoginScreen() {
     setIsLoggedIn(true) // 🔥 dopiero po sukcesie
     router.push("/trainer")
   }
-  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
