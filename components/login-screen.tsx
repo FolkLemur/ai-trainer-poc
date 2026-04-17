@@ -30,7 +30,12 @@ export function LoginScreen() {
     }
   
     console.log("LOGGED USER:", data.user)
-  
+
+    await supabase.from("users").upsert({
+    id: data.user.id,
+    email: data.user.email,
+  })
+    
     setIsLoggedIn(true) // 🔥 dopiero po sukcesie
     router.push("/trainer")
   }
