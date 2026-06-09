@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input"
 import { SwipeButton } from "@/components/swipe-button"
 import { useApp } from "@/contexts/app-context"
 import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase"
 
 export function LoginScreen() {
   const [email, setEmail] = useState("")
@@ -13,30 +12,8 @@ export function LoginScreen() {
   const { setIsLoggedIn } = useApp()
   const router = useRouter()
 
-  const handleLogin = async () => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: email,
-    password: password,
-    })
-    
-    if (!email || !password) {
-    console.log("Missing credentials")
-    return
-    }
-  
-    if (error) {
-      console.error("LOGIN ERROR:", error)
-      return
-    }
-  
-    console.log("LOGGED USER:", data.user)
-
-    await supabase.from("users").upsert({
-    id: data.user.id,
-    email: data.user.email,
-  })
-    
-    setIsLoggedIn(true) // 🔥 dopiero po sukcesie
+  const handleLogin = () => {
+    setIsLoggedIn(true)
     router.push("/trainer")
   }
 
