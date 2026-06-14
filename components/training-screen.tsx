@@ -49,11 +49,11 @@ export function TrainingScreen() {
       }
 
       if (!userProfile?.active_plan_id) {
-      console.log("NO ACTIVE PLAN")
-    
-      setPlanDays([])
-      clearExercises() // 🔥 to jest właściwy reset
-      return
+        console.log("NO ACTIVE PLAN")
+
+        setPlanDays([])
+        clearExercises() // 🔥 to jest właściwy reset
+        return
       }
 
       const { data: planDays, error: planError } = await supabase

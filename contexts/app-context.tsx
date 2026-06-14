@@ -10,6 +10,7 @@ interface Message {
   id: string
   role: "user" | "assistant"
   content: string
+  options?: string[]
 }
 
 interface ExerciseSet {
