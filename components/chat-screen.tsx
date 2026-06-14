@@ -7,6 +7,7 @@ import { useApp } from "@/contexts/app-context"
 export function ChatScreen() {
   const [input, setInput] = useState("")
   const { messages, addMessage } = useApp()
+  console.log("MESSAGES:", messages)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
