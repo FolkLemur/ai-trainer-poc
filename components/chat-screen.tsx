@@ -3,10 +3,11 @@
 import { useState, useRef, useEffect } from "react"
 import { Send } from "lucide-react"
 import { useApp } from "@/contexts/app-context"
+import { supabase } from "@/lib/supabase"
 
 export function ChatScreen() {
   const [input, setInput] = useState("")
-  const { messages, addMessage } = useApp()
+  const { messages, addMessage, setMessages} = useApp()
   console.log("MESSAGES:", messages)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -17,6 +18,54 @@ export function ChatScreen() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+  async function loadChatMenu() {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (!user) return
+
+    const { data: userProfile } = await supabase
+      .from("users")
+      .select("active_plan_id")
+      .eq("id", user.id)
+      .single()
+
+    if (userProfile?.active_plan_id) {
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: "I've loaded the next day from your active training plan.",
+          options: [
+            "Train",
+            "Change Day",
+            "Free Workout",
+            "Ready Workouts",
+            "Edit Plan",
+          ],
+        },
+      ])
+    } else {
+      setMessages([
+        {
+          id: "1",
+          role: "assistant",
+          content: "You don't have an active training plan.",
+          options: [
+            "Create / Select Plan",
+            "Free Workout",
+            "Ready Workouts",
+          ],
+        },
+      ])
+    }
+  }
+
+  loadChatMenu()
+}, [])
 
   const handleSend = () => {
     if (!input.trim()) return

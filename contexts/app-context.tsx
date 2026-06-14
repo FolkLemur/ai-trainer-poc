@@ -35,6 +35,7 @@ interface AppContextType {
   setIsSideNavOpen: (value: boolean) => void
   messages: Message[]
   addMessage: (message: Omit<Message, "id">) => void
+  setMessages: (messages: Message[]) => void
   exercises: Exercise[]
   updateExercise: (
     exerciseId: string,
@@ -218,6 +219,7 @@ console.log("LAST PLAN DAY:", lastSession.plan_day_id)
         setIsSideNavOpen,
         messages,
         addMessage,
+        setMessages,
         exercises,
         updateExercise,
         clearExercises,
