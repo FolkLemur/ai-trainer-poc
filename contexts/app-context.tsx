@@ -60,12 +60,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false)
   const [planDays, setPlanDays] = useState<any[]>([])
   const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hey! I'm your AI trainer. How can I help you today?",
-    },
-  ])
+  {
+    id: "1",
+    role: "assistant",
+    content: "Welcome back 👋",
+    options: [
+      "Train",
+      "Free Workout",
+      "Ready Workouts",
+    ],
+  },
+])
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [selectedPlanDayId, setSelectedPlanDayId] = useState<string | null>(null)
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0)

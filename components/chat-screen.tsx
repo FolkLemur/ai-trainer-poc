@@ -44,21 +44,36 @@ export function ChatScreen() {
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+  <div
+    key={message.id}
+    className={`flex flex-col ${
+      message.role === "user" ? "items-end" : "items-start"
+    }`}
+  >
+    <div
+      className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+        message.role === "user"
+          ? "bg-foreground text-background rounded-br-md"
+          : "bg-secondary text-foreground rounded-bl-md"
+      }`}
+    >
+      <p className="text-sm leading-relaxed">{message.content}</p>
+    </div>
+
+    {message.options && (
+      <div className="flex flex-wrap gap-2 mt-2">
+        {message.options.map((option) => (
+          <button
+            key={option}
+            className="px-3 py-2 rounded-full bg-secondary text-sm hover:bg-secondary/80"
           >
-            <div
-              className={`max-w-[80%] px-4 py-3 rounded-2xl ${
-                message.role === "user"
-                  ? "bg-foreground text-background rounded-br-md"
-                  : "bg-secondary text-foreground rounded-bl-md"
-              }`}
-            >
-              <p className="text-sm leading-relaxed">{message.content}</p>
-            </div>
-          </div>
+            {option}
+          </button>
         ))}
+      </div>
+    )}
+  </div>
+))}
         <div ref={messagesEndRef} />
       </div>
 
