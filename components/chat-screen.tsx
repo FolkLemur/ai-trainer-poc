@@ -65,6 +65,12 @@ export function ChatScreen() {
         {message.options.map((option) => (
           <button
             key={option}
+            onClick={() =>
+            addMessage({
+              role: "user",
+              content: option,
+            })
+          }
             className="px-3 py-2 rounded-full bg-secondary text-sm hover:bg-secondary/80"
           >
             {option}
